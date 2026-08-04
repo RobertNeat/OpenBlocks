@@ -36,6 +36,13 @@ describe('GameEngine', () => {
     expect(engine.getSnapshot().activePiece?.rotation).toBe(before?.rotation);
   });
 
+  it('spawns the active piece on the visible top of the board', () => {
+    const engine = new GameEngine(() => 0);
+    engine.start();
+
+    expect(engine.getSnapshot().activePiece?.y).toBe(engine.hiddenRows);
+  });
+
   it('clears full rows and shifts remaining rows down', () => {
     const engine = new GameEngine(() => 0);
     for (let x = 0; x < 10; x += 1) {
@@ -84,8 +91,8 @@ describe('GameEngine', () => {
 
     engine.start();
     for (let x = 0; x < 10; x += 1) {
-      engine.setCellForTest(x, 1, 'S');
-      engine.setCellForTest(x, 2, 'S');
+      engine.setCellForTest(x, 4, 'S');
+      engine.setCellForTest(x, 5, 'S');
     }
     (engine as unknown as { spawnPiece: () => void }).spawnPiece();
 

@@ -9,9 +9,7 @@
   display: grid;
   place-items: center;
   padding: clamp(16px, 4vw, 48px);
-  background:
-    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--ob-accent) 18%, transparent), transparent 30%),
-    linear-gradient(135deg, var(--ob-page), var(--ob-page-alt));
+  background: var(--ob-page);
 }
 
 .window {
@@ -144,6 +142,8 @@ canvas {
   display: grid;
   grid-template-columns: 1fr;
   gap: 5px;
+  position: relative;
+  overflow: hidden;
 }
 
 .stats span {
@@ -161,6 +161,20 @@ canvas {
 .stats strong:last-child {
   border-bottom: 0;
   padding-bottom: 0;
+}
+
+.stats.score-effect {
+  animation: score-panel-pop 520ms ease-out;
+}
+
+.stats.score-effect::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--ob-accent) 24%, transparent);
+  animation: score-flash 520ms ease-out;
 }
 
 .actions {
@@ -220,4 +234,16 @@ canvas {
   .side-panel {
     grid-template-columns: 1fr;
   }
+}
+
+@keyframes score-panel-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+
+@keyframes score-flash {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  100% { opacity: 0; }
 }

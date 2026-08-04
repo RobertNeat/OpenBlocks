@@ -50,9 +50,9 @@ export class BoardRenderer {
   }
 
   private drawBoardBackground(context: CanvasRenderingContext2D, cellSize: number): void {
-    context.fillStyle = '#0a0c0d';
+    context.fillStyle = this.color('--ob-board-bg', '#0a0c0d');
     context.fillRect(0, 0, 300, 600);
-    context.strokeStyle = '#202427';
+    context.strokeStyle = this.color('--ob-board-grid', '#202427');
     context.lineWidth = 1;
     for (let row = 0; row < VISIBLE_ROWS; row += 1) {
       for (let col = 0; col < 10; col += 1) {
@@ -82,7 +82,7 @@ export class BoardRenderer {
   }
 
   private drawPreview(context: CanvasRenderingContext2D, type: TetrominoType): void {
-    context.fillStyle = '#101315';
+    context.fillStyle = this.color('--ob-preview-bg', '#101315');
     context.fillRect(0, 0, 140, 110);
     const cells = TETROMINOES[type].rotations[0];
     const minX = Math.min(...cells.map((cell) => cell.x));
@@ -111,8 +111,8 @@ export class BoardRenderer {
     context.globalAlpha = alpha;
     if (outline) {
       context.strokeStyle = color;
-      context.lineWidth = 2;
-      this.roundRect(context, x + 3, y + 3, size - 6, size - 6, 4);
+      context.lineWidth = 2.5;
+      this.roundRect(context, x + 1, y + 1, size - 2, size - 2, 4);
       context.stroke();
       context.restore();
       return;
@@ -140,5 +140,10 @@ export class BoardRenderer {
   private roundRect(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number): void {
     context.beginPath();
     context.roundRect(x, y, width, height, radius);
+  }
+
+  private color(variableName: string, fallback: string): string {
+    const source = document.querySelector('.shell') ?? document.documentElement;
+    return getComputedStyle(source).getPropertyValue(variableName).trim() || fallback;
   }
 }

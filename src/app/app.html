@@ -1,4 +1,4 @@
-<main class="shell">
+<main class="shell" [attr.data-theme]="theme()">
   <section class="window" aria-label="OpenBricks">
     <header class="titlebar">
       <div class="brand-mark" aria-hidden="true">
@@ -8,6 +8,7 @@
       <div class="titlebar__actions">
         <button type="button" [class.is-active]="language() === 'pl'" (click)="setLanguage('pl')">PL</button>
         <button type="button" [class.is-active]="language() === 'en'" (click)="setLanguage('en')">EN</button>
+        <button type="button" class="theme-toggle" (click)="toggleTheme()">{{ theme() === 'dark' ? 'Light' : 'Dark' }}</button>
       </div>
     </header>
 
@@ -22,7 +23,7 @@
           <canvas #nextCanvas aria-label="Next piece"></canvas>
         </section>
 
-        <section class="panel stats">
+        <section class="panel stats" [class.score-effect]="scoreEffect()">
           <span>{{ text().score }}</span>
           <strong>{{ score() }}</strong>
           <span>{{ text().best }}</span>

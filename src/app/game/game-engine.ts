@@ -186,7 +186,7 @@ export class GameEngine {
     const piece: ActivePiece = {
       type,
       x: type === 'I' ? 3 : 3,
-      y: 1,
+      y: HIDDEN_ROWS,
       rotation: 0,
     };
 
