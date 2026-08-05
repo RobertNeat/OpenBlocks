@@ -22,7 +22,9 @@ type TextKey =
   | 'controls'
   | 'move'
   | 'rotate'
-  | 'drop';
+  | 'drop'
+  | 'pressSpace'
+  | 'finalScore';
 type TextLabels = Record<TextKey, string>;
 
 const TEXT: Record<Language, TextLabels> = {
@@ -30,7 +32,7 @@ const TEXT: Record<Language, TextLabels> = {
     next: 'Nastepny',
     score: 'Wynik',
     best: 'Najlepszy w sesji',
-    lines: 'Linie',
+    lines: 'Rzedy',
     level: 'Poziom',
     start: 'Start',
     restart: 'Restart',
@@ -44,12 +46,14 @@ const TEXT: Record<Language, TextLabels> = {
     move: 'Ruch',
     rotate: 'Obrot',
     drop: 'Zrzut',
+    pressSpace: 'Nacisnij spacje',
+    finalScore: 'Wynik koncowy',
   },
   en: {
     next: 'Next',
     score: 'Score',
     best: 'Best this session',
-    lines: 'Lines',
+    lines: 'Rows',
     level: 'Level',
     start: 'Start',
     restart: 'Restart',
@@ -63,6 +67,8 @@ const TEXT: Record<Language, TextLabels> = {
     move: 'Move',
     rotate: 'Rotate',
     drop: 'Drop',
+    pressSpace: 'Press Space',
+    finalScore: 'Final score',
   },
 } as const;
 
@@ -133,12 +139,24 @@ export class App implements AfterViewInit, OnDestroy {
     this.syncAndRender();
   }
 
+  protected toggleLanguage(): void {
+    this.setLanguage(this.language() === 'pl' ? 'en' : 'pl');
+  }
+
   protected toggleTheme(): void {
     this.theme.update((theme) => (theme === 'dark' ? 'light' : 'dark'));
   }
 
   protected statusClass(): string {
     return this.engine.getSnapshot().status;
+  }
+
+  protected overlayVisible(): boolean {
+    return this.statusClass() !== 'running';
+  }
+
+  protected overlayTitle(): string {
+    return this.status();
   }
 
   private readonly handleVisibilityChange = (): void => {

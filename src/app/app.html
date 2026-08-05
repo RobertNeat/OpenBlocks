@@ -1,20 +1,37 @@
-<main class="shell" [attr.data-theme]="theme()">
-  <section class="window" aria-label="OpenBricks">
+<main class="shell" [attr.data-theme]="theme()" [attr.data-status]="statusClass()">
+  <section class="window" aria-label="OpenBlocks">
     <header class="titlebar">
       <div class="brand-mark" aria-hidden="true">
         <span></span><span></span><span></span><span></span>
       </div>
-      <h1>OpenBricks</h1>
+      <h1>OpenBlocks</h1>
       <div class="titlebar__actions">
-        <button type="button" [class.is-active]="language() === 'pl'" (click)="setLanguage('pl')">PL</button>
-        <button type="button" [class.is-active]="language() === 'en'" (click)="setLanguage('en')">EN</button>
-        <button type="button" class="theme-toggle" (click)="toggleTheme()">{{ theme() === 'dark' ? 'Light' : 'Dark' }}</button>
+        <button type="button" class="titlebar__button" (click)="toggleLanguage()">
+          {{ language().toUpperCase() }}
+        </button>
+        <button
+          type="button"
+          class="titlebar__button theme-toggle"
+          (click)="toggleTheme()"
+          [attr.aria-label]="theme() === 'dark' ? 'Light theme' : 'Dark theme'"
+        >
+          {{ theme() === 'dark' ? 'Light' : 'Dark' }}
+        </button>
       </div>
     </header>
 
     <div class="game-layout">
       <div class="board-frame">
-        <canvas #boardCanvas aria-label="OpenBricks board"></canvas>
+        <canvas #boardCanvas aria-label="OpenBlocks board"></canvas>
+        @if (overlayVisible()) {
+          <div class="board-overlay">
+            <strong>{{ overlayTitle() }}</strong>
+            @if (score() > 0) {
+              <span>{{ text().finalScore }}: {{ score() }}</span>
+            }
+            <small>{{ text().pressSpace }}</small>
+          </div>
+        }
       </div>
 
       <aside class="side-panel">
@@ -44,17 +61,19 @@
             {{ status() }}
           </p>
           <button type="button" (click)="start()">{{ text().start }}</button>
-          <button type="button" (click)="togglePause()">{{ statusClass() === 'paused' ? text().resume : text().pause }}</button>
+          <button type="button" (click)="togglePause()">
+            {{ statusClass() === 'paused' ? text().resume : text().pause }}
+          </button>
           <button type="button" (click)="restart()">{{ text().restart }}</button>
         </section>
       </aside>
     </div>
 
     <footer class="controls" aria-label="Keyboard controls">
-      <span>← → {{ text().move }}</span>
-      <span>↓ Soft</span>
+      <span>&larr; &rarr; {{ text().move }}</span>
+      <span>&darr; Soft</span>
       <span>Space {{ text().drop }}</span>
-      <span>Z / ↑ X {{ text().rotate }}</span>
+      <span>Z / &uarr; X {{ text().rotate }}</span>
       <span>P / Esc</span>
       <span>R</span>
     </footer>

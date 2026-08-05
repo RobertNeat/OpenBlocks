@@ -1,4 +1,4 @@
-import { ActivePiece, getCells, HIDDEN_ROWS, TETROMINOES, TetrominoType, VISIBLE_ROWS } from './tetrominoes';
+import { ActivePiece, BLOCK_SHAPES, BlockShapeType, getCells, HIDDEN_ROWS, VISIBLE_ROWS } from './block-shapes';
 import { BoardCell, GameSnapshot } from './game-engine';
 
 export class BoardRenderer {
@@ -66,7 +66,7 @@ export class BoardRenderer {
     board.slice(HIDDEN_ROWS).forEach((row, visibleY) => {
       row.forEach((cell, x) => {
         if (cell !== null) {
-          this.drawBlock(context, x * cellSize, visibleY * cellSize, cellSize, TETROMINOES[cell].color, 1);
+          this.drawBlock(context, x * cellSize, visibleY * cellSize, cellSize, BLOCK_SHAPES[cell].color, 1);
         }
       });
     });
@@ -76,15 +76,15 @@ export class BoardRenderer {
     for (const cell of getCells(piece)) {
       const visibleY = cell.y - HIDDEN_ROWS;
       if (visibleY >= 0) {
-        this.drawBlock(context, cell.x * cellSize, visibleY * cellSize, cellSize, TETROMINOES[piece.type].color, alpha, outline);
+        this.drawBlock(context, cell.x * cellSize, visibleY * cellSize, cellSize, BLOCK_SHAPES[piece.type].color, alpha, outline);
       }
     }
   }
 
-  private drawPreview(context: CanvasRenderingContext2D, type: TetrominoType): void {
+  private drawPreview(context: CanvasRenderingContext2D, type: BlockShapeType): void {
     context.fillStyle = this.color('--ob-preview-bg', '#101315');
     context.fillRect(0, 0, 140, 110);
-    const cells = TETROMINOES[type].rotations[0];
+    const cells = BLOCK_SHAPES[type].rotations[0];
     const minX = Math.min(...cells.map((cell) => cell.x));
     const maxX = Math.max(...cells.map((cell) => cell.x));
     const minY = Math.min(...cells.map((cell) => cell.y));
@@ -94,7 +94,7 @@ export class BoardRenderer {
     const offsetY = (110 - (maxY - minY + 1) * size) / 2 - minY * size;
 
     for (const cell of cells) {
-      this.drawBlock(context, offsetX + cell.x * size, offsetY + cell.y * size, size, TETROMINOES[type].color, 1);
+      this.drawBlock(context, offsetX + cell.x * size, offsetY + cell.y * size, size, BLOCK_SHAPES[type].color, 1);
     }
   }
 

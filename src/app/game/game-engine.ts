@@ -1,24 +1,24 @@
 import {
   ActivePiece,
+  BLOCK_SHAPES,
   BOARD_COLUMNS,
   BOARD_ROWS,
+  BlockShapeType,
   getCells,
   getRotation,
   HIDDEN_ROWS,
-  TetrominoType,
-  TETROMINOES,
   VISIBLE_ROWS,
-} from './tetrominoes';
-import { SevenBag } from './seven-bag';
+} from './block-shapes';
+import { PieceBag } from './piece-bag';
 
 export type GameStatus = 'ready' | 'running' | 'paused' | 'game-over';
-export type BoardCell = TetrominoType | null;
+export type BoardCell = BlockShapeType | null;
 
 export interface GameSnapshot {
   readonly board: readonly (readonly BoardCell[])[];
   readonly activePiece: ActivePiece | null;
   readonly ghostPiece: ActivePiece | null;
-  readonly nextPiece: TetrominoType;
+  readonly nextPiece: BlockShapeType;
   readonly score: number;
   readonly highScore: number;
   readonly level: number;
@@ -35,16 +35,16 @@ export class GameEngine {
   readonly totalRows = BOARD_ROWS;
 
   private board: BoardCell[][] = this.createBoard();
-  private bag: SevenBag;
+  private bag: PieceBag;
   private activePiece: ActivePiece | null = null;
-  private nextPiece: TetrominoType;
+  private nextPiece: BlockShapeType;
   private scoreValue = 0;
   private highScoreValue = 0;
   private linesValue = 0;
   private statusValue: GameStatus = 'ready';
 
   constructor(private readonly random: () => number = Math.random) {
-    this.bag = new SevenBag(this.random);
+    this.bag = new PieceBag(this.random);
     this.nextPiece = this.bag.next();
   }
 
@@ -169,7 +169,7 @@ export class GameEngine {
 
   private resetCurrentGame(): void {
     this.board = this.createBoard();
-    this.bag = new SevenBag(this.random);
+    this.bag = new PieceBag(this.random);
     this.nextPiece = this.bag.next();
     this.activePiece = null;
     this.scoreValue = 0;
@@ -278,4 +278,4 @@ export class GameEngine {
   }
 }
 
-export { BOARD_COLUMNS, BOARD_ROWS, HIDDEN_ROWS, TETROMINOES, VISIBLE_ROWS };
+export { BLOCK_SHAPES, BOARD_COLUMNS, BOARD_ROWS, HIDDEN_ROWS, VISIBLE_ROWS };

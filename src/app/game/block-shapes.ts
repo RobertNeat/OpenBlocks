@@ -1,18 +1,18 @@
-export type TetrominoType = 'I' | 'J' | 'L' | 'O' | 'S' | 'T' | 'Z';
+export type BlockShapeType = 'I' | 'J' | 'L' | 'O' | 'S' | 'T' | 'Z';
 
 export interface Point {
   readonly x: number;
   readonly y: number;
 }
 
-export interface TetrominoDefinition {
-  readonly type: TetrominoType;
+export interface BlockShapeDefinition {
+  readonly type: BlockShapeType;
   readonly color: string;
   readonly rotations: readonly (readonly Point[])[];
 }
 
 export interface ActivePiece {
-  readonly type: TetrominoType;
+  readonly type: BlockShapeType;
   readonly x: number;
   readonly y: number;
   readonly rotation: number;
@@ -23,10 +23,10 @@ export const VISIBLE_ROWS = 20;
 export const HIDDEN_ROWS = 4;
 export const BOARD_ROWS = VISIBLE_ROWS + HIDDEN_ROWS;
 
-export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
+export const BLOCK_SHAPES: Record<BlockShapeType, BlockShapeDefinition> = {
   I: {
     type: 'I',
-    color: '#4aa3ff',
+    color: '#3db6b2',
     rotations: [
       [
         { x: 0, y: 1 },
@@ -56,7 +56,7 @@ export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
   },
   J: {
     type: 'J',
-    color: '#5b7dff',
+    color: '#64748b',
     rotations: [
       [
         { x: 0, y: 0 },
@@ -86,7 +86,7 @@ export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
   },
   L: {
     type: 'L',
-    color: '#ff9f2e',
+    color: '#b87545',
     rotations: [
       [
         { x: 2, y: 0 },
@@ -116,7 +116,7 @@ export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
   },
   O: {
     type: 'O',
-    color: '#f4c542',
+    color: '#d6b24c',
     rotations: [
       [
         { x: 1, y: 0 },
@@ -128,7 +128,7 @@ export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
   },
   S: {
     type: 'S',
-    color: '#7fc94a',
+    color: '#6aa56f',
     rotations: [
       [
         { x: 1, y: 0 },
@@ -146,7 +146,7 @@ export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
   },
   T: {
     type: 'T',
-    color: '#9b68de',
+    color: '#8f6fad',
     rotations: [
       [
         { x: 1, y: 0 },
@@ -176,7 +176,7 @@ export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
   },
   Z: {
     type: 'Z',
-    color: '#df6b5c',
+    color: '#c85f6a',
     rotations: [
       [
         { x: 0, y: 0 },
@@ -195,11 +195,11 @@ export const TETROMINOES: Record<TetrominoType, TetrominoDefinition> = {
 };
 
 export function getCells(piece: ActivePiece): Point[] {
-  const shape = TETROMINOES[piece.type].rotations[piece.rotation];
+  const shape = BLOCK_SHAPES[piece.type].rotations[piece.rotation];
   return shape.map((cell) => ({ x: piece.x + cell.x, y: piece.y + cell.y }));
 }
 
 export function getRotation(piece: ActivePiece, direction: 1 | -1): number {
-  const rotations = TETROMINOES[piece.type].rotations.length;
+  const rotations = BLOCK_SHAPES[piece.type].rotations.length;
   return (piece.rotation + direction + rotations) % rotations;
 }

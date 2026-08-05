@@ -1,8 +1,8 @@
-import { SevenBag } from './seven-bag';
+import { PieceBag } from './piece-bag';
 
-describe('SevenBag', () => {
-  it('returns every tetromino exactly once before repeating the bag', () => {
-    const bag = new SevenBag(() => 0.5);
+describe('PieceBag', () => {
+  it('returns every block shape exactly once before repeating the bag', () => {
+    const bag = new PieceBag(() => 0.5);
 
     const firstBag = Array.from({ length: 7 }, () => bag.next());
     const secondBag = Array.from({ length: 7 }, () => bag.next());

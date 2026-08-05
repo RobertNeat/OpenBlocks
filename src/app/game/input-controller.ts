@@ -69,7 +69,7 @@ export class InputController {
         this.engine.rotateCounterClockwise();
         break;
       case 'Space':
-        this.engine.hardDrop();
+        this.handleSpace();
         break;
       case 'KeyP':
       case 'Escape':
@@ -112,4 +112,18 @@ export class InputController {
     this.repeatIntervalId = 0;
     this.activeRepeatKey = null;
   };
+
+  private handleSpace(): void {
+    const status = this.engine.getSnapshot().status;
+    if (status === 'ready' || status === 'game-over') {
+      this.engine.start();
+      return;
+    }
+    if (status === 'paused') {
+      this.engine.resume();
+      return;
+    }
+
+    this.engine.hardDrop();
+  }
 }
