@@ -1,0 +1,10 @@
+# defines how to run the OpenBlocks image in a container
+name: openblocks
+
+services:
+  openblocks:
+    image: ${IMAGE}
+    container_name: openblocks
+    restart: unless-stopped
+    ports:
+      - '18080:80'

@@ -1,0 +1,74 @@
+name: Deploy production
+
+on:
+  workflow_run:
+    workflows:
+      - Build Docker image
+    types:
+      - completed
+    branches:
+      - main
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Docker image tag to deploy
+        required: false
+        default: latest
+
+env:
+  REGISTRY: 192.168.1.162:5000
+  IMAGE_NAME: openblocks/app
+  PRODUCTION_HOST: 192.168.1.160
+  PRODUCTION_USER: docker_deploy
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+
+    runs-on:
+      - self-hosted
+      - linux
+      - production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Prepare image
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ]; then TAG="latest"; fi
+          echo "IMAGE=${REGISTRY}/${IMAGE_NAME}:${TAG}" >> "$GITHUB_ENV"
+
+      - name: Copy compose to production
+        run: |
+          scp compose.yml \
+            ${PRODUCTION_USER}@${PRODUCTION_HOST}:/tmp/openblocks-compose.yml
+
+      - name: Deploy
+        run: |
+          ssh ${PRODUCTION_USER}@${PRODUCTION_HOST} "
+            set -e
+
+            IMAGE='${IMAGE}' docker compose \
+              -f /tmp/openblocks-compose.yml \
+              pull
+
+            IMAGE='${IMAGE}' docker compose \
+              -f /tmp/openblocks-compose.yml \
+              up -d
+
+            rm -f /tmp/openblocks-compose.yml
+
+            docker image prune -f
+          "
+
+      - name: Verify
+        run: |
+          ssh ${PRODUCTION_USER}@${PRODUCTION_HOST} \
+            "docker inspect \
+              --format='{{.State.Status}} / restart={{.HostConfig.RestartPolicy.Name}}' \
+              openblocks"
