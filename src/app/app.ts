@@ -76,11 +76,13 @@ const TEXT: Record<Language, TextLabels> = {
   selector: 'ob-root',
   imports: [],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App implements AfterViewInit, OnDestroy {
-  @ViewChild('boardCanvas', { static: true }) private readonly boardCanvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('nextCanvas', { static: true }) private readonly nextCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('boardCanvas', { static: true })
+  private readonly boardCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('nextCanvas', { static: true })
+  private readonly nextCanvas!: ElementRef<HTMLCanvasElement>;
 
   protected readonly language = signal<Language>('pl');
   protected readonly theme = signal<Theme>('dark');
@@ -101,7 +103,10 @@ export class App implements AfterViewInit, OnDestroy {
   private effectTimeoutId = 0;
 
   ngAfterViewInit(): void {
-    this.renderer = new BoardRenderer(this.boardCanvas.nativeElement, this.nextCanvas.nativeElement);
+    this.renderer = new BoardRenderer(
+      this.boardCanvas.nativeElement,
+      this.nextCanvas.nativeElement,
+    );
     this.input = new InputController(this.engine, () => this.syncAndRender());
     this.input.connect();
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
@@ -199,7 +204,10 @@ export class App implements AfterViewInit, OnDestroy {
     this.level.set(snapshot.level);
     this.status.set(this.text()[snapshot.status === 'game-over' ? 'gameOver' : snapshot.status]);
 
-    if (snapshot.score > previousScore && (snapshot.score - previousScore >= 100 || snapshot.lines > previousLines)) {
+    if (
+      snapshot.score > previousScore &&
+      (snapshot.score - previousScore >= 100 || snapshot.lines > previousLines)
+    ) {
       this.scoreEffect.set(false);
       window.clearTimeout(this.effectTimeoutId);
       requestAnimationFrame(() => this.scoreEffect.set(true));

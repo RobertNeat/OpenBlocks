@@ -6,10 +6,7 @@ describe('App', () => {
     const context = new Proxy(
       {},
       {
-        get:
-          () =>
-          (..._args: unknown[]) =>
-            undefined,
+        get: () => () => undefined,
         set: () => true,
       },
     ) as CanvasRenderingContext2D;

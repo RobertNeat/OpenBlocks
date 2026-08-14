@@ -1,10 +1,9 @@
-# defines how to run the OpenBlocks image in a container
+# Change this value when copying the template to another single-application project.
 name: openblocks
 
 services:
-  openblocks:
-    image: ${IMAGE}
-    container_name: openblocks
+  app:
+    image: ${REGISTRY}/${COMPOSE_PROJECT_NAME}/app:${IMAGE_TAG}
     restart: unless-stopped
     ports:
-      - '18080:80'
+      - '80:80'

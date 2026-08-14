@@ -1,0 +1,112 @@
+name: Check Node project
+description: Install the requested Node runtime with mise, then run quality, security, tests and build using project-local tools.
+inputs:
+  path:
+    required: true
+  version:
+    description: Node.js version managed by mise, e.g. 22 or 24
+    required: true
+  framework:
+    description: angular, nestjs or node
+    required: false
+    default: node
+  package-manager:
+    description: pnpm, npm or yarn
+    required: false
+    default: pnpm
+runs:
+  using: composite
+  steps:
+    - name: Prepare Node runtime
+      shell: bash
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        command -v mise >/dev/null
+        mise exec "node@${NODE_VERSION}" -- node --version
+        mise exec "node@${NODE_VERSION}" -- npm --version
+
+        if ! mise exec "node@${NODE_VERSION}" -- bash -c 'command -v corepack >/dev/null 2>&1'; then
+          mise exec "node@${NODE_VERSION}" -- npm install --global corepack
+        fi
+        mise exec "node@${NODE_VERSION}" -- corepack enable
+
+    - name: Verify security tools
+      shell: bash
+      run: |
+        set -euo pipefail
+        trivy --version
+        semgrep --version
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+        PM: ${{ inputs.package-manager }}
+      run: |
+        set -euo pipefail
+        case "$PM" in
+          pnpm) mise exec "node@${NODE_VERSION}" -- pnpm install --frozen-lockfile ;;
+          npm)  mise exec "node@${NODE_VERSION}" -- npm ci ;;
+          yarn) mise exec "node@${NODE_VERSION}" -- yarn install --immutable ;;
+          *) echo "Unsupported package manager: $PM" >&2; exit 2 ;;
+        esac
+
+    - name: Lint
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+        PM: ${{ inputs.package-manager }}
+      run: mise exec "node@${NODE_VERSION}" -- "$PM" run lint
+
+    - name: Format check
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+        PM: ${{ inputs.package-manager }}
+      run: mise exec "node@${NODE_VERSION}" -- "$PM" exec prettier --check .
+
+    - name: Type check
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+        PM: ${{ inputs.package-manager }}
+      run: mise exec "node@${NODE_VERSION}" -- "$PM" exec tsc --noEmit
+
+    - name: Dependency vulnerabilities
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: trivy fs --exit-code 1 --severity HIGH,CRITICAL --scanners vuln .
+
+    - name: SAST
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: semgrep scan --config auto --error .
+
+    - name: Unit tests
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+        FRAMEWORK: ${{ inputs.framework }}
+        PM: ${{ inputs.package-manager }}
+      run: |
+        set -euo pipefail
+        case "$FRAMEWORK" in
+          angular) mise exec "node@${NODE_VERSION}" -- "$PM" run test --watch=false ;;
+          nestjs)  mise exec "node@${NODE_VERSION}" -- "$PM" run test -- --runInBand ;;
+          *)       mise exec "node@${NODE_VERSION}" -- "$PM" run test ;;
+        esac
+
+    - name: Build without publishing
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+        PM: ${{ inputs.package-manager }}
+      run: mise exec "node@${NODE_VERSION}" -- "$PM" run build

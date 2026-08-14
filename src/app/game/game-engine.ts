@@ -177,7 +177,9 @@ export class GameEngine {
   }
 
   private createBoard(): BoardCell[][] {
-    return Array.from({ length: BOARD_ROWS }, () => Array.from({ length: BOARD_COLUMNS }, () => null));
+    return Array.from({ length: BOARD_ROWS }, () =>
+      Array.from({ length: BOARD_COLUMNS }, () => null),
+    );
   }
 
   private spawnPiece(): void {
@@ -255,7 +257,9 @@ export class GameEngine {
   private clearFullRows(): number {
     const remaining = this.board.filter((row) => row.some((cell) => cell === null));
     const cleared = BOARD_ROWS - remaining.length;
-    const empty = Array.from({ length: cleared }, () => Array.from({ length: BOARD_COLUMNS }, () => null));
+    const empty = Array.from({ length: cleared }, () =>
+      Array.from({ length: BOARD_COLUMNS }, () => null),
+    );
     this.board = [...empty, ...remaining];
     return cleared;
   }

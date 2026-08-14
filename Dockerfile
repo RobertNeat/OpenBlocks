@@ -1,5 +1,6 @@
 # defines how to build the OpenBlocks image
-FROM node:24-alpine AS build
+ARG NODE_VERSION=24
+FROM node:${NODE_VERSION}-alpine AS build
 
 WORKDIR /app
 
@@ -12,6 +13,8 @@ COPY . .
 RUN pnpm build
 
 FROM nginx:1.29-alpine
+
+RUN apk upgrade --no-cache
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/open-blocks/browser /usr/share/nginx/html

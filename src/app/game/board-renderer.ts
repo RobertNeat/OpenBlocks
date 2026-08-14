@@ -1,4 +1,11 @@
-import { ActivePiece, BLOCK_SHAPES, BlockShapeType, getCells, HIDDEN_ROWS, VISIBLE_ROWS } from './block-shapes';
+import {
+  ActivePiece,
+  BLOCK_SHAPES,
+  BlockShapeType,
+  getCells,
+  HIDDEN_ROWS,
+  VISIBLE_ROWS,
+} from './block-shapes';
 import { BoardCell, GameSnapshot } from './game-engine';
 
 export class BoardRenderer {
@@ -56,27 +63,59 @@ export class BoardRenderer {
     context.lineWidth = 1;
     for (let row = 0; row < VISIBLE_ROWS; row += 1) {
       for (let col = 0; col < 10; col += 1) {
-        this.roundRect(context, col * cellSize + 1, row * cellSize + 1, cellSize - 2, cellSize - 2, 3);
+        this.roundRect(
+          context,
+          col * cellSize + 1,
+          row * cellSize + 1,
+          cellSize - 2,
+          cellSize - 2,
+          3,
+        );
         context.stroke();
       }
     }
   }
 
-  private drawLockedCells(context: CanvasRenderingContext2D, board: readonly (readonly BoardCell[])[], cellSize: number): void {
+  private drawLockedCells(
+    context: CanvasRenderingContext2D,
+    board: readonly (readonly BoardCell[])[],
+    cellSize: number,
+  ): void {
     board.slice(HIDDEN_ROWS).forEach((row, visibleY) => {
       row.forEach((cell, x) => {
         if (cell !== null) {
-          this.drawBlock(context, x * cellSize, visibleY * cellSize, cellSize, BLOCK_SHAPES[cell].color, 1);
+          this.drawBlock(
+            context,
+            x * cellSize,
+            visibleY * cellSize,
+            cellSize,
+            BLOCK_SHAPES[cell].color,
+            1,
+          );
         }
       });
     });
   }
 
-  private drawPiece(context: CanvasRenderingContext2D, piece: ActivePiece, cellSize: number, alpha: number, outline: boolean): void {
+  private drawPiece(
+    context: CanvasRenderingContext2D,
+    piece: ActivePiece,
+    cellSize: number,
+    alpha: number,
+    outline: boolean,
+  ): void {
     for (const cell of getCells(piece)) {
       const visibleY = cell.y - HIDDEN_ROWS;
       if (visibleY >= 0) {
-        this.drawBlock(context, cell.x * cellSize, visibleY * cellSize, cellSize, BLOCK_SHAPES[piece.type].color, alpha, outline);
+        this.drawBlock(
+          context,
+          cell.x * cellSize,
+          visibleY * cellSize,
+          cellSize,
+          BLOCK_SHAPES[piece.type].color,
+          alpha,
+          outline,
+        );
       }
     }
   }
@@ -94,7 +133,14 @@ export class BoardRenderer {
     const offsetY = (110 - (maxY - minY + 1) * size) / 2 - minY * size;
 
     for (const cell of cells) {
-      this.drawBlock(context, offsetX + cell.x * size, offsetY + cell.y * size, size, BLOCK_SHAPES[type].color, 1);
+      this.drawBlock(
+        context,
+        offsetX + cell.x * size,
+        offsetY + cell.y * size,
+        size,
+        BLOCK_SHAPES[type].color,
+        1,
+      );
     }
   }
 
@@ -137,7 +183,14 @@ export class BoardRenderer {
     context.restore();
   }
 
-  private roundRect(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number): void {
+  private roundRect(
+    context: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+  ): void {
     context.beginPath();
     context.roundRect(x, y, width, height, radius);
   }
