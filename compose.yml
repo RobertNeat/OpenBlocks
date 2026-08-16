@@ -6,4 +6,4 @@ services:
     image: ${REGISTRY}/${COMPOSE_PROJECT_NAME}/app:${IMAGE_TAG}
     restart: unless-stopped
     ports:
-      - '80:80'
+      - '1000:80'
